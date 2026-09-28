@@ -32,3 +32,4 @@ replay_pid*
 .DS_Store
 .stable-backend-src/
 .angular/
+.vscode
