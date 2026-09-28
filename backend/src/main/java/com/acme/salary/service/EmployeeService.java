@@ -2,7 +2,6 @@ package com.acme.salary.service;
 
 import com.acme.salary.domain.*;
 import com.acme.salary.exception.ConflictException;
-import com.acme.salary.exception.ConflictException;
 import com.acme.salary.exception.NotFoundException;
 import com.acme.salary.infrastructure.persistence.*;
 import com.acme.salary.presentation.dto.*;
@@ -55,7 +54,7 @@ public class EmployeeService {
     public EmployeeDetailResponse getById(UUID id) {
         Employee e = require(id);
         List<SalaryRecord> history = salaryRecordRepository.findByEmployeeIdOrderByEffectiveFromDesc(id);
-        return new EmployeeDetailResponse(toResp(e, history.isEmpty() ? null : history.getFirst()),
+        return new EmployeeDetailResponse(toResp(e, history.isEmpty() ? null :null),
                 history.stream().map(EmployeeService::toSalary).toList());
     }
 

@@ -1,19 +1,36 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
 :root {
-  --acme-navy: #0b1f33;
-  --acme-teal: #1f6f7a;
-  --acme-sand: #e8eef2;
-  --acme-ink: #14212b;
+  --acme-navy: #0b3d5c;
+  --acme-teal: #1f7a8c;
+  --acme-sand: #f3f6f8;
 }
+
 body {
   margin: 0;
-  font-family: "Source Sans 3", "Segoe UI", sans-serif;
-  color: var(--acme-ink);
-  background: linear-gradient(180deg, #f7fafc 0%, var(--acme-sand) 100%);
   min-height: 100vh;
+  background: linear-gradient(160deg, var(--acme-sand) 0%, #ffffff 55%, #e8eef2 100%);
+  color: #1a2a33;
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
 }
-.navbar-acme { background: var(--acme-navy); }
-.btn-acme { background: var(--acme-teal); border-color: var(--acme-teal); color: #fff; }
-.btn-acme:hover { filter: brightness(0.95); color: #fff; }
-.card-panel { background: #fff; border: 1px solid #d7e0e6; border-radius: 0.5rem; padding: 1.25rem; }
-.bar { height: 12px; background: var(--acme-teal); border-radius: 999px; }
- 
+
+.card-panel {
+  background: #fff;
+  border: 1px solid #d7e0e6;
+  border-radius: 0.75rem;
+  padding: 1.75rem;
+  box-shadow: 0 10px 30px rgba(11, 61, 92, 0.08);
+}
+
+.btn-acme {
+  background-color: var(--acme-navy);
+  border-color: var(--acme-navy);
+  color: #fff;
+}
+
+.btn-acme:hover,
+.btn-acme:focus {
+  background-color: var(--acme-teal);
+  border-color: var(--acme-teal);
+  color: #fff;
+}
