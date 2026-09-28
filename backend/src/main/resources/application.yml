@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: acme-salary-management
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/acme_salary}
+    username: ${DB_USER:acme}
+    password: ${DB_PASSWORD:acme_secret}
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    ignore-migration-patterns: "*:missing"
+server:
+  port: ${SERVER_PORT:8081}
+app:
+  jwt:
+    secret: ${JWT_SECRET:change-me-to-a-long-random-secret-at-least-32-chars}
+    expiration-ms: ${JWT_EXPIRATION_MS:28800000}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:9080,http://localhost:4200}
+  seed:
+    enabled: ${SEED_ON_START:false}
+    employee-count: ${SEED_EMPLOYEE_COUNT:10000}
+    batch-size: ${SEED_BATCH_SIZE:500}
+    hr-email: ${SEED_HR_EMAIL:hr.manager@acme.example}
+    hr-password: ${SEED_HR_PASSWORD:ChangeMe!Acme2026}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+logging:
+  level:
+    root: INFO
+    com.acme.salary: INFO
