@@ -14,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EmployeeService {
-    private static final int MAX_PAGE = 100, DEFAULT_PAGE = 20;
+    private static final int MAX_PAGE = 100, DEFAULT_PAGE = 20, MAX_FILTER_LENGTH = 100;
+    private static final Sort LIST_SORT = Sort.by(Sort.Order.asc("employeeNumber"));
     private final EmployeeRepository employeeRepository;
     private final SalaryRecordRepository salaryRecordRepository;
 
@@ -33,13 +34,15 @@ public class EmployeeService {
             int size) {
         int safeSize = size <= 0 ? DEFAULT_PAGE : Math.min(size, MAX_PAGE);
         int safePage = Math.max(page, 0);
+        String safeName = boundedFilter(name);
+        String safeDepartment = boundedFilter(department);
+        String safeCountry = boundedFilter(countryCode);
         EmployeeStatus st = (status == null || status.isBlank())
                 ? null
                 : EmployeeStatus.valueOf(status.trim().toUpperCase(Locale.ROOT));
-        PageRequest pageable = PageRequest.of(safePage, safeSize,
-                Sort.by("lastName").ascending().and(Sort.by("firstName")));
+        PageRequest pageable = PageRequest.of(safePage, safeSize, LIST_SORT);
         Page<Employee> result = employeeRepository.findAll(
-                EmployeeSpecifications.withFilters(name, department, countryCode, st), pageable);
+                EmployeeSpecifications.withFilters(safeName, safeDepartment, safeCountry, st), pageable);
         Map<UUID, SalaryRecord> current = new HashMap<>();
         for (Employee e : result.getContent()) {
             salaryRecordRepository.findFirstByEmployeeIdOrderByEffectiveFromDesc(e.getId())
@@ -54,7 +57,7 @@ public class EmployeeService {
     public EmployeeDetailResponse getById(UUID id) {
         Employee e = require(id);
         List<SalaryRecord> history = salaryRecordRepository.findByEmployeeIdOrderByEffectiveFromDesc(id);
-        return new EmployeeDetailResponse(toResp(e, history.isEmpty() ? null :null),
+        return new EmployeeDetailResponse(toResp(e, history.isEmpty() ? null : history.getFirst()),
                 history.stream().map(EmployeeService::toSalary).toList());
     }
 
@@ -92,6 +95,17 @@ public class EmployeeService {
                 SalaryRecord.create(id, new Money(req.amountMinor(), e.getCurrencyCode()), req.effectiveFrom(),
                         req.changeReason()));
         return getById(id);
+    }
+
+    private static String boundedFilter(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        String trimmed = value.trim();
+        if (trimmed.length() > MAX_FILTER_LENGTH) {
+            throw new IllegalArgumentException("Filter too long");
+        }
+        return trimmed;
     }
 
     private Employee require(UUID id) {

@@ -13,10 +13,10 @@
 
 | Table | Index | Purpose |
 |-------|-------|---------|
-| `employee` | `(last_name, first_name)` | Name search / sort |
+| `employee` | `(last_name, first_name)` | Name search |
+| `employee` | `employee_number` (unique) | Default list sort / lookup |
 | `employee` | `department` | Department filter |
 | `employee` | `country_code` | Country filter |
-| `employee` | `employee_number` (unique) | Lookup / uniqueness |
 | `employee` | `status` | Status filter |
 | `salary_record` | `(employee_id, effective_from DESC)` | Current salary + history |
 
@@ -24,7 +24,7 @@
 
 - All list endpoints require `page` (0-based) and `size`
 - Reject `size` &gt; 100 at the validation boundary
-- Prefer keyset/offset via Spring Data `Pageable`; default sort by last name, first name
+- Prefer keyset/offset via Spring Data `Pageable`; default sort by employee number
 
 ## Analytics strategy
 

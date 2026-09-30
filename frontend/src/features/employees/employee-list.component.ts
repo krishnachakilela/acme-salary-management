@@ -43,6 +43,9 @@ import {ApiService, Employee} from '../../core/api.service';
                 </tr>
                 </thead>
                 <tbody>
+                <tr *ngIf="employees.length === 0">
+                    <td colspan="6" class="text-muted">No employees match these filters.</td>
+                </tr>
                 <tr *ngFor="let e of employees">
                     <td>{{ e.employeeNumber }}</td>
                     <td>{{ e.lastName }}, {{ e.firstName }}</td>
