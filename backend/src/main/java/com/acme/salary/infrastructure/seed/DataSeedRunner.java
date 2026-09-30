@@ -91,11 +91,16 @@ public class DataSeedRunner implements ApplicationRunner {
             for (int i = start; i < end; i++) {
                 UUID id = UUID.randomUUID();
                 String[] cc = COUNTRIES[i % COUNTRIES.length];
+
+                // Deterministic name generation using index `i` similar to employee numbers
+                String firstName = FIRST[i % FIRST.length];
+                String lastName = LAST[(i / FIRST.length) % LAST.length];
+
                 long amount = (40_000L + random.nextInt(160_000)) * 100L;
                 if ("INR".equals(cc[1]))
                     amount = (40_000L + random.nextInt(160_000)) * 80L;
                 empRows.add(new Object[] {
-                        id, String.format("EMP%08d", i + 1), FIRST[random.nextInt(FIRST.length)], LAST[random.nextInt(LAST.length)],
+                        id, String.format("EMP%08d", i + 1), firstName, lastName,
                         ("emp" + (i + 1) + "@acme.example").toLowerCase(), DEPTS[i % DEPTS.length], cc[0], cc[1], "ACTIVE", now, now
                 });
                 salRows.add(new Object[] {
