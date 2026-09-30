@@ -130,4 +130,3 @@ class AnalyticsIntegrationTest {
                 .andExpect(status().isCreated());
     }
 }
- 
