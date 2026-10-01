@@ -1,0 +1,66 @@
+<h1 class="h3 mb-3">Compensation analytics</h1>
+
+<div class="card-panel mb-3" *ngIf="summary">
+    <p class="mb-1"><strong>Total employees:</strong> {{ summary.totalEmployees }}</p>
+
+    <h2 class="h5 mt-3">By currency</h2>
+    <table class="table table-sm">
+        <thead>
+        <tr>
+            <th>Currency</th>
+            <th>Headcount</th>
+            <th>Total</th>
+            <th>Average</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let row of summary.byCurrency">
+            <td>{{ row.currencyCode }}</td>
+            <td>{{ row.headcount }}</td>
+            <td>{{ row.totalMinor / 100 | number:'1.0-0' }}</td>
+            <td>{{ row.averageMinor / 100 | number:'1.0-0' }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="h5">By country</h2>
+            <div *ngFor="let row of summary.byCountry" class="chart-row mb-2">
+                <div class="d-flex justify-content-between">
+                    <span>{{ row.key }}</span>
+                    <span>{{ row.headcount }}</span>
+                </div>
+                <div class="bar-track">
+                    <div class="bar" [style.width.%]="groupWidth(row.headcount)"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h2 class="h5">By department</h2>
+            <div *ngFor="let row of summary.byDepartment" class="chart-row mb-2">
+                <div class="d-flex justify-content-between">
+                    <span>{{ row.key }}</span>
+                    <span>{{ row.headcount }}</span>
+                </div>
+                <div class="bar-track">
+                    <div class="bar" [style.width.%]="groupWidth(row.headcount)"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card-panel" *ngIf="distribution">
+    <h2 class="h5">Salary distribution bands</h2>
+    <div *ngFor="let band of distribution.bands" class="chart-row mb-2">
+        <div class="d-flex justify-content-between">
+            <span>{{ band.band }}</span>
+            <span>{{ band.headcount }}</span>
+        </div>
+        <div class="bar-track">
+            <div class="bar" [style.width.%]="bandWidth(band.headcount)"></div>
+        </div>
+    </div>
+</div>
+ 

@@ -3,79 +3,122 @@ import {ActivatedRoute, RouterLink} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 import {NgFor, NgIf, DecimalPipe} from '@angular/common';
 import {ApiService, Employee, Salary} from '../../core/api.service';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
     selector: 'app-employee-detail',
     standalone: true,
-    imports: [FormsModule, NgFor, NgIf, RouterLink, DecimalPipe],
-    template: `
-        <a routerLink="/employees">&larr; Back</a>
-        <div class="card-panel mt-3" *ngIf="employee">
-            <h1 class="h3">{{ employee.firstName }} {{ employee.lastName }}</h1>
-            <p>{{ employee.employeeNumber }} · {{ employee.department }} · {{ employee.countryCode }}
-                / {{ employee.currencyCode }} · {{ employee.status }}</p>
-            <p *ngIf="employee.currentSalary">
-                <strong>Current:</strong> {{ employee.currentSalary.amountMinor / 100 | number:'1.0-0' }} {{ employee.currencyCode }}
-            </p>
-
-            <h2 class="h5 mt-4">Salary history</h2>
-            <table class="table table-sm">
-                <thead>
-                <tr>
-                    <th>Effective</th>
-                    <th>Amount</th>
-                    <th>Reason</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr *ngFor="let s of history">
-                    <td>{{ s.effectiveFrom }}</td>
-                    <td>{{ s.amountMinor / 100 | number:'1.0-0' }} {{ s.currencyCode }}</td>
-                    <td>{{ s.changeReason }}</td>
-                </tr>
-                </tbody>
-            </table>
-
-            <h2 class="h5 mt-4">Add salary change</h2>
-            <form class="row g-2" (ngSubmit)="addSalary()">
-                <div class="col-md-3"><input class="form-control" type="number" [(ngModel)]="amountMajor" name="amount"
-                                             placeholder="Amount (major units)" required/></div>
-                <div class="col-md-3"><input class="form-control" type="date" [(ngModel)]="effectiveFrom"
-                                             name="effectiveFrom" required/></div>
-                <div class="col-md-4"><input class="form-control" [(ngModel)]="changeReason" name="changeReason"
-                                             placeholder="Reason" required/></div>
-                <div class="col-md-2">
-                    <button class="btn btn-acme w-100" type="submit">Save</button>
-                </div>
-            </form>
-            <div class="text-danger mt-2" *ngIf="error">{{ error }}</div>
-        </div>
-    `
+    imports: [FormsModule, NgFor, NgIf, RouterLink, DecimalPipe, ConfirmDialogComponent],
+    templateUrl: './employee-detail.component.html',
+    styleUrl: './employee-detail.component.css'
 })
 export class EmployeeDetailComponent implements OnInit {
     private readonly api = inject(ApiService);
     private readonly route = inject(ActivatedRoute);
+
     employee?: Employee;
     history: Salary[] = [];
     amountMajor = 100000;
     effectiveFrom = new Date().toISOString().slice(0, 10);
     changeReason = 'Annual adjustment';
     error = '';
+    statusError = '';
+    statusUpdating = false;
+
+    confirmOpen = false;
+    confirmTitle = '';
+    confirmMessage = '';
+    confirmLabel = '';
+    confirmTone: 'primary' | 'danger' = 'primary';
+    private pendingStatus: 'ACTIVE' | 'INACTIVE' | null = null;
 
     ngOnInit(): void {
         const id = this.route.snapshot.paramMap.get('id')!;
         this.load(id);
     }
 
+    get canEditSalary(): boolean {
+        return this.employee?.status === 'ACTIVE';
+    }
+
+    requestStatusChange(status: 'ACTIVE' | 'INACTIVE'): void {
+        if (!this.employee || this.statusUpdating) {
+            return;
+        }
+
+        this.pendingStatus = status;
+        if (status === 'INACTIVE') {
+            this.confirmTitle = 'Mark employee inactive';
+            this.confirmMessage =
+                `Mark ${this.employee.firstName} ${this.employee.lastName} as inactive? They will remain searchable with status INACTIVE.`;
+            this.confirmLabel = 'Mark inactive';
+            this.confirmTone = 'danger';
+        } else {
+            this.confirmTitle = 'Reactivate employee';
+            this.confirmMessage =
+                `Reactivate ${this.employee.firstName} ${this.employee.lastName}? Their status will change back to ACTIVE.`;
+            this.confirmLabel = 'Reactivate';
+            this.confirmTone = 'primary';
+        }
+        this.confirmOpen = true;
+    }
+
+    cancelStatusChange(): void {
+        this.confirmOpen = false;
+        this.pendingStatus = null;
+    }
+
+    confirmStatusChange(): void {
+        if (!this.employee || !this.pendingStatus || this.statusUpdating) {
+            return;
+        }
+
+        const status = this.pendingStatus;
+        this.confirmOpen = false;
+        this.pendingStatus = null;
+        this.statusUpdating = true;
+        this.statusError = '';
+
+        this.api.updateEmployee(this.employee.id, {
+            firstName: this.employee.firstName,
+            lastName: this.employee.lastName,
+            email: this.employee.email,
+            department: this.employee.department,
+            countryCode: this.employee.countryCode,
+            currencyCode: this.employee.currencyCode,
+            status
+        }).subscribe({
+            next: (res) => {
+                this.employee = res.employee;
+                this.history = res.salaryHistory;
+                this.statusUpdating = false;
+            },
+            error: () => {
+                this.statusUpdating = false;
+                this.statusError = status === 'INACTIVE'
+                    ? 'Unable to mark employee inactive'
+                    : 'Unable to reactivate employee';
+            }
+        });
+    }
+
     addSalary(): void {
-        const id = this.employee!.id;
+        if (!this.employee || !this.canEditSalary) {
+            this.error = 'Salary changes are allowed only for active employees';
+            return;
+        }
+
+        const id = this.employee.id;
+        this.error = '';
         this.api.addSalary(id, {
             amountMinor: Math.round(this.amountMajor * 100),
             effectiveFrom: this.effectiveFrom,
             changeReason: this.changeReason
         }).subscribe({
             next: () => this.load(id),
-            error: () => this.error = 'Unable to add salary change'
+            error: () => {
+                this.error = 'Unable to add salary change';
+            }
         });
     }
 
@@ -86,4 +129,5 @@ export class EmployeeDetailComponent implements OnInit {
         });
     }
 }
+ 
  

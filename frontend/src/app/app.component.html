@@ -1,0 +1,12 @@
+<nav class="navbar navbar-expand navbar-dark navbar-acme px-3 mb-4" *ngIf="auth.isLoggedIn()">
+    <a class="navbar-brand" routerLink="/employees">ACME Salary</a>
+    <div class="navbar-nav">
+        <a class="nav-link" routerLink="/employees">Employees</a>
+        <a class="nav-link" routerLink="/analytics">Analytics</a>
+    </div>
+    <button class="btn btn-sm btn-outline-light ms-auto" type="button" (click)="logout()">Logout</button>
+</nav>
+<main class="container pb-5">
+    <router-outlet/>
+</main>
+ 

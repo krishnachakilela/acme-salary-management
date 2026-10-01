@@ -1,0 +1,109 @@
+<a routerLink="/employees">&larr; Back</a>
+
+<div class="card-panel mt-3" *ngIf="employee">
+    <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+        <div>
+            <h1 class="h3 mb-1">{{ employee.firstName }} {{ employee.lastName }}</h1>
+            <p class="mb-2">
+                {{ employee.employeeNumber }} · {{ employee.department }} · {{ employee.countryCode }}
+                / {{ employee.currencyCode }}
+            </p>
+            <span class="status-badge" [class.status-active]="employee.status === 'ACTIVE'"
+                  [class.status-inactive]="employee.status === 'INACTIVE'">
+        {{ employee.status }}
+      </span>
+        </div>
+        <div class="status-actions">
+            <button
+                    *ngIf="employee.status === 'ACTIVE'"
+                    class="btn btn-outline-danger"
+                    type="button"
+                    [disabled]="statusUpdating"
+                    (click)="requestStatusChange('INACTIVE')">
+                {{ statusUpdating ? 'Updating...' : 'Mark inactive' }}
+            </button>
+            <button
+                    *ngIf="employee.status === 'INACTIVE'"
+                    class="btn btn-acme"
+                    type="button"
+                    [disabled]="statusUpdating"
+                    (click)="requestStatusChange('ACTIVE')">
+                {{ statusUpdating ? 'Updating...' : 'Reactivate' }}
+            </button>
+        </div>
+    </div>
+
+    <p class="mt-3" *ngIf="employee.currentSalary">
+        <strong>Current:</strong>
+        {{ employee.currentSalary.amountMinor / 100 | number:'1.0-0' }} {{ employee.currencyCode }}
+    </p>
+    <div class="text-danger mt-2" *ngIf="statusError">{{ statusError }}</div>
+
+    <h2 class="h5 mt-4">Salary history</h2>
+    <table class="table table-sm">
+        <thead>
+        <tr>
+            <th>Effective</th>
+            <th>Amount</th>
+            <th>Reason</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let s of history">
+            <td>{{ s.effectiveFrom }}</td>
+            <td>{{ s.amountMinor / 100 | number:'1.0-0' }} {{ s.currencyCode }}</td>
+            <td>{{ s.changeReason }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2 class="h5 mt-4">Add salary change</h2>
+    <p class="text-muted salary-disabled-note" *ngIf="!canEditSalary">
+        Salary adjustments are disabled while this employee is inactive. Reactivate the employee to add a change.
+    </p>
+    <form (ngSubmit)="addSalary()">
+        <fieldset class="row g-2 border-0 p-0 m-0" [disabled]="!canEditSalary"
+                  [class.salary-form-disabled]="!canEditSalary">
+            <div class="col-md-3">
+                <input
+                        class="form-control"
+                        type="number"
+                        [(ngModel)]="amountMajor"
+                        name="amount"
+                        placeholder="Amount (major units)"
+                        required/>
+            </div>
+            <div class="col-md-3">
+                <input
+                        class="form-control"
+                        type="date"
+                        [(ngModel)]="effectiveFrom"
+                        name="effectiveFrom"
+                        required/>
+            </div>
+            <div class="col-md-4">
+                <input
+                        class="form-control"
+                        [(ngModel)]="changeReason"
+                        name="changeReason"
+                        placeholder="Reason"
+                        required/>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-acme w-100" type="submit" [disabled]="!canEditSalary">Save</button>
+            </div>
+        </fieldset>
+    </form>
+    <div class="text-danger mt-2" *ngIf="error">{{ error }}</div>
+</div>
+
+<app-confirm-dialog
+        [open]="confirmOpen"
+        [title]="confirmTitle"
+        [message]="confirmMessage"
+        [confirmLabel]="confirmLabel"
+        [confirmTone]="confirmTone"
+        (confirmed)="confirmStatusChange()"
+        (cancelled)="cancelStatusChange()">
+</app-confirm-dialog>
+ 

@@ -1,0 +1,12 @@
+.navbar-acme {
+  background: var(--acme-navy);
+}
+
+.navbar-acme .nav-link {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.navbar-acme .nav-link:hover {
+  color: #fff;
+}
+ 

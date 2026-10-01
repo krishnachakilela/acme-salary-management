@@ -1,0 +1,28 @@
+.card-panel {
+    background: #fff;
+    border: 1px solid #d7e0e6;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    overflow: hidden;
+}
+
+.chart-row {
+    width: 100%;
+    max-width: 100%;
+}
+
+.bar-track {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e8eef2;
+}
+
+.bar {
+    height: 12px;
+    max-width: 100%;
+    background: var(--acme-teal);
+    border-radius: 999px;
+}
+ 

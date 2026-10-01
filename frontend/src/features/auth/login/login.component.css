@@ -1,0 +1,23 @@
+.card-panel {
+    background: #fff;
+    border: 1px solid #d7e0e6;
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+}
+
+.btn-acme {
+    background: var(--acme-teal);
+    border-color: var(--acme-teal);
+    color: #fff;
+}
+
+.btn-acme:hover:not(:disabled) {
+    filter: brightness(0.95);
+    color: #fff;
+}
+
+.btn-acme:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+ 

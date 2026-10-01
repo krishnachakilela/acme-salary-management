@@ -1,0 +1,78 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Employees</h1>
+    <a class="btn btn-acme" routerLink="/employees/new">Add employee</a>
+</div>
+
+<div class="card-panel mb-3">
+    <div class="row g-2">
+        <div class="col-md-3">
+            <input class="form-control" placeholder="Name" [(ngModel)]="name" (ngModelChange)="reload()"/>
+        </div>
+        <div class="col-md-3">
+            <input class="form-control" placeholder="Department" [(ngModel)]="department" (ngModelChange)="reload()"/>
+        </div>
+        <div class="col-md-2">
+            <input class="form-control" placeholder="Country" [(ngModel)]="countryCode" (ngModelChange)="reload()"/>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" [(ngModel)]="status" (ngModelChange)="reload()">
+                <option value="">All statuses</option>
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="INACTIVE">INACTIVE</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="card-panel">
+    <table class="table table-sm align-middle">
+        <thead>
+        <tr>
+            <th>Number</th>
+            <th>Name</th>
+            <th>Dept</th>
+            <th>Country</th>
+            <th>Status</th>
+            <th>Salary</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngIf="employees.length === 0">
+            <td colspan="7" class="text-muted">No employees match these filters.</td>
+        </tr>
+        <tr *ngFor="let e of employees">
+            <td>{{ e.employeeNumber }}</td>
+            <td>{{ e.lastName }}, {{ e.firstName }}</td>
+            <td>{{ e.department }}</td>
+            <td>{{ e.countryCode }}</td>
+            <td>
+          <span class="status-pill" [class.status-active]="e.status === 'ACTIVE'"
+                [class.status-inactive]="e.status === 'INACTIVE'">
+            {{ e.status }}
+          </span>
+            </td>
+            <td *ngIf="e.currentSalary">
+                {{ e.currentSalary.amountMinor / 100 | number:'1.0-0' }} {{ e.currencyCode }}
+            </td>
+            <td *ngIf="!e.currentSalary">-</td>
+            <td><a [routerLink]="['/employees', e.id]">Open</a></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex gap-2 align-items-center">
+        <button class="btn btn-outline-secondary btn-sm" type="button" [disabled]="page === 0" (click)="prev()">
+            Prev
+        </button>
+        <span>Page {{ page + 1 }} / {{ totalPages || 1 }} ({{ totalElements }} total)</span>
+        <button
+                class="btn btn-outline-secondary btn-sm"
+                type="button"
+                [disabled]="page + 1 >= totalPages"
+                (click)="next()">
+            Next
+        </button>
+    </div>
+</div>
+ 

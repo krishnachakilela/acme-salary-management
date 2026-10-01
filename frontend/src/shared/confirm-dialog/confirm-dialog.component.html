@@ -1,0 +1,25 @@
+<div class="confirm-backdrop" *ngIf="open" (click)="onCancel()" role="presentation">
+    <div
+            class="confirm-dialog"
+            role="dialog"
+            aria-modal="true"
+            [attr.aria-labelledby]="titleId"
+            (click)="$event.stopPropagation()">
+        <h2 class="confirm-title" [id]="titleId">{{ title }}</h2>
+        <p class="confirm-message">{{ message }}</p>
+        <div class="confirm-actions">
+            <button class="btn btn-outline-secondary" type="button" (click)="onCancel()">
+                {{ cancelLabel }}
+            </button>
+            <button
+                    class="btn"
+                    type="button"
+                    [class.btn-acme]="confirmTone === 'primary'"
+                    [class.btn-danger]="confirmTone === 'danger'"
+                    (click)="onConfirm()">
+                {{ confirmLabel }}
+            </button>
+        </div>
+    </div>
+</div>
+ 

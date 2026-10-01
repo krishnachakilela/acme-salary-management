@@ -1,0 +1,191 @@
+<a routerLink="/employees">&larr; Back</a>
+
+<div class="card-panel mt-3">
+    <h1 class="h3">Create employee</h1>
+    <form class="row g-3" #employeeForm="ngForm" (ngSubmit)="save(employeeForm)" novalidate>
+        <div class="col-md-4">
+            <label class="form-label" for="employee-number">Employee number</label>
+            <input
+                    id="employee-number"
+                    class="form-control"
+                    name="employeeNumber"
+                    [(ngModel)]="employeeNumber"
+                    #employeeNumberCtrl="ngModel"
+                    required
+                    [pattern]="employeeNumberPattern"
+                    maxlength="13"
+                    [class.is-invalid]="showError(employeeNumberCtrl)"/>
+            <div class="invalid-feedback" *ngIf="showError(employeeNumberCtrl)">
+                <span *ngIf="employeeNumberCtrl.errors?.['required']">Employee number is required.</span>
+                <span *ngIf="employeeNumberCtrl.errors?.['pattern']">
+          Use EMP followed by 4–10 digits (e.g. EMP00000010).
+        </span>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label" for="first-name">First name</label>
+            <input
+                    id="first-name"
+                    class="form-control"
+                    name="firstName"
+                    [(ngModel)]="firstName"
+                    #firstNameCtrl="ngModel"
+                    required
+                    minlength="1"
+                    maxlength="100"
+                    [class.is-invalid]="showError(firstNameCtrl)"/>
+            <div class="invalid-feedback" *ngIf="showError(firstNameCtrl)">
+                First name is required (max 100 characters).
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label" for="last-name">Last name</label>
+            <input
+                    id="last-name"
+                    class="form-control"
+                    name="lastName"
+                    [(ngModel)]="lastName"
+                    #lastNameCtrl="ngModel"
+                    required
+                    minlength="1"
+                    maxlength="100"
+                    [class.is-invalid]="showError(lastNameCtrl)"/>
+            <div class="invalid-feedback" *ngIf="showError(lastNameCtrl)">
+                Last name is required (max 100 characters).
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label" for="email">Email</label>
+            <input
+                    id="email"
+                    class="form-control"
+                    type="email"
+                    name="email"
+                    [(ngModel)]="email"
+                    #emailCtrl="ngModel"
+                    required
+                    email
+                    [pattern]="emailPattern"
+                    maxlength="255"
+                    [class.is-invalid]="showError(emailCtrl)"/>
+            <div class="invalid-feedback" *ngIf="showError(emailCtrl)">
+                <span *ngIf="emailCtrl.errors?.['required']">Email is required.</span>
+                <span *ngIf="emailCtrl.errors?.['email'] || emailCtrl.errors?.['pattern']">
+          Enter a valid email address.
+        </span>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label" for="department">Department</label>
+            <input
+                    id="department"
+                    class="form-control"
+                    name="department"
+                    [(ngModel)]="department"
+                    #departmentCtrl="ngModel"
+                    required
+                    maxlength="100"
+                    [class.is-invalid]="showError(departmentCtrl)"/>
+            <div class="invalid-feedback" *ngIf="showError(departmentCtrl)">
+                Department is required (max 100 characters).
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label" for="country-code">Country</label>
+            <input
+                    id="country-code"
+                    class="form-control text-uppercase"
+                    name="countryCode"
+                    [(ngModel)]="countryCode"
+                    #countryCodeCtrl="ngModel"
+                    required
+                    maxlength="2"
+                    [pattern]="countryCodePattern"
+                    [class.is-invalid]="showError(countryCodeCtrl)"/>
+            <div class="invalid-feedback" *ngIf="showError(countryCodeCtrl)">
+                Enter a 2-letter country code (e.g. US).
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label" for="currency-code">Currency</label>
+            <input
+                    id="currency-code"
+                    class="form-control text-uppercase"
+                    name="currencyCode"
+                    [(ngModel)]="currencyCode"
+                    #currencyCodeCtrl="ngModel"
+                    required
+                    maxlength="3"
+                    [pattern]="currencyCodePattern"
+                    [class.is-invalid]="showError(currencyCodeCtrl)"/>
+            <div class="invalid-feedback" *ngIf="showError(currencyCodeCtrl)">
+                Enter a 3-letter currency code (e.g. USD).
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label" for="amount-major">Starting salary</label>
+            <input
+                    id="amount-major"
+                    class="form-control"
+                    type="number"
+                    name="amountMajor"
+                    [(ngModel)]="amountMajor"
+                    #amountMajorCtrl="ngModel"
+                    required
+                    [min]="minSalaryMajor"
+                    [max]="maxSalaryMajor"
+                    step="0.01"
+                    [class.is-invalid]="showError(amountMajorCtrl)"/>
+            <div class="invalid-feedback" *ngIf="showError(amountMajorCtrl)">
+                Enter a salary between {{ minSalaryMajor }} and {{ maxSalaryMajor }}.
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label" for="effective-from">Effective from</label>
+            <input
+                    id="effective-from"
+                    class="form-control"
+                    type="date"
+                    name="effectiveFrom"
+                    [(ngModel)]="effectiveFrom"
+                    #effectiveFromCtrl="ngModel"
+                    required
+                    [class.is-invalid]="showError(effectiveFromCtrl)"/>
+            <div class="invalid-feedback" *ngIf="showError(effectiveFromCtrl)">
+                Effective date is required.
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label" for="change-reason">Reason</label>
+            <input
+                    id="change-reason"
+                    class="form-control"
+                    name="changeReason"
+                    [(ngModel)]="changeReason"
+                    #changeReasonCtrl="ngModel"
+                    required
+                    maxlength="255"
+                    [class.is-invalid]="showError(changeReasonCtrl)"/>
+            <div class="invalid-feedback" *ngIf="showError(changeReasonCtrl)">
+                Reason is required (max 255 characters).
+            </div>
+        </div>
+
+        <div class="col-12">
+            <button class="btn btn-acme" type="submit" [disabled]="saving">
+                {{ saving ? 'Creating...' : 'Create' }}
+            </button>
+        </div>
+        <div class="text-danger" *ngIf="error">{{ error }}</div>
+    </form>
+</div>
+ 
