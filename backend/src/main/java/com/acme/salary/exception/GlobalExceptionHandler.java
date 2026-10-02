@@ -1,8 +1,5 @@
-package com.acme.salary.presentation.controller;
+package com.acme.salary.exception;
 
-import com.acme.salary.exception.ConflictException;
-import com.acme.salary.exception.DomainException;
-import com.acme.salary.exception.NotFoundException;
 import com.acme.salary.presentation.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
