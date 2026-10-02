@@ -76,22 +76,41 @@ Login Screen
 
 Employee List 
 
-<img width="3456" height="1934" alt="image" src="https://github.com/user-attachments/assets/0e774788-6196-4740-a17b-1759a087d107" />
+<img width="3456" height="1878" alt="image" src="https://github.com/user-attachments/assets/5117e2de-9e09-49c8-969e-e0768499914e" />
 
-Add Employee Screen 
+Add Employee Screen with validation 
 
-<img width="3448" height="1526" alt="image" src="https://github.com/user-attachments/assets/f595e969-313b-4209-929c-c057e9cb6619" />
+<img width="3456" height="1654" alt="image" src="https://github.com/user-attachments/assets/67f09ad3-1bdd-4ca5-a649-158d38a97afb" />
 
-Save Employee
-<img width="3456" height="1468" alt="image" src="https://github.com/user-attachments/assets/da240328-27d5-4b59-809d-85673814ee7a" />
+Save Employee 
 
-Employee Info 
+<img width="3430" height="1352" alt="image" src="https://github.com/user-attachments/assets/37909dc4-6ebe-44f5-80da-823591869a7c" />
 
-<img width="3436" height="1528" alt="image" src="https://github.com/user-attachments/assets/9d521602-711c-4535-8ed0-f8ce28fb5a2c" />
+Add Salary Range
 
-Analytics
+<img width="3434" height="1282" alt="image" src="https://github.com/user-attachments/assets/a2693522-4674-41b2-863e-1544125b6e6f" />
 
-<img width="3456" height="1968" alt="image" src="https://github.com/user-attachments/assets/0f157d85-fa88-47fc-824e-902a1ec27603" />
+Mark employee as IN-Active 
+
+<img width="3440" height="1500" alt="image" src="https://github.com/user-attachments/assets/e7d1a609-cb8b-4a25-986d-fdb5a9de4891" />
+
+IN-ACTIVE Employee screen where salary addition is not allowed 
+
+<img width="3456" height="1446" alt="image" src="https://github.com/user-attachments/assets/21441b3e-5006-41b7-a847-8f33a0dd026a" />
+
+Re-Active employee screen 
+
+<img width="3456" height="1720" alt="image" src="https://github.com/user-attachments/assets/548910f1-3723-4091-9904-eaeaa0140478" />
+
+Analytics Dashboard by currency , country & department
+
+<img width="3442" height="1924" alt="image" src="https://github.com/user-attachments/assets/f15bdfc8-1e98-4ee7-84f7-243e2e63d69f" />
+
+Salary Distribution bands 
+
+<img width="2982" height="598" alt="image" src="https://github.com/user-attachments/assets/b7b51429-6f5e-453d-b3b3-c4703b22551a" />
+
+
 
 
 
