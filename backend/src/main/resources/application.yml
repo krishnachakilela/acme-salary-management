@@ -39,6 +39,13 @@ management:
     health:
       probes:
         enabled: true
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    taga-shoter: alpha
+    operations-sorter: method
 logging:
   level:
     root: INFO

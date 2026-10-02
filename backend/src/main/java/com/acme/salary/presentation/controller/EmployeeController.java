@@ -2,6 +2,8 @@ package com.acme.salary.presentation.controller;
 
 import com.acme.salary.service.EmployeeService;
 import com.acme.salary.presentation.dto.*;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import java.util.UUID;
@@ -9,8 +11,11 @@ import java.util.UUID;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import static com.acme.salary.infrastructure.config.OpenApiConfig.BEARER_AUTH_SCHEME;
 @RestController
 @RequestMapping("/api/v1/employees")
+@Tag(name = "Employees")
+@SecurityRequirement(name = BEARER_AUTH_SCHEME)
 public class EmployeeController {
     private final EmployeeService employeeService;
 

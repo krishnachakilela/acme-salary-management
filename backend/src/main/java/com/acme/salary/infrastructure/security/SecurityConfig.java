@@ -35,6 +35,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/api/v1/health", "/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**"
+                        ).permitAll()
                         .anyRequest().hasRole("HR_MANAGER"))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) -> {
