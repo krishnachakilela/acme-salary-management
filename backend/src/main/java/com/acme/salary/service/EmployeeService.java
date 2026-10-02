@@ -91,6 +91,9 @@ public class EmployeeService {
     @Transactional
     public EmployeeDetailResponse addSalary(UUID id, CreateSalaryRequest req) {
         Employee e = require(id);
+        if (!e.isEligibleForSalaryChange()) {
+            throw new ConflictException("Salary changes are allowed only for active employees");
+        }
         salaryRecordRepository.save(
                 SalaryRecord.create(id, new Money(req.amountMinor(), e.getCurrencyCode()), req.effectiveFrom(),
                         req.changeReason()));

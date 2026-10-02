@@ -76,6 +76,10 @@ public class Employee {
         this.updatedAt = Instant.now();
     }
 
+    public boolean isEligibleForSalaryChange() {
+        return status == EmployeeStatus.ACTIVE;
+    }
+
     private static String require(String v) {
         if (v == null || v.isBlank() || v.trim().length() > 100)
             throw new IllegalArgumentException("Invalid text");

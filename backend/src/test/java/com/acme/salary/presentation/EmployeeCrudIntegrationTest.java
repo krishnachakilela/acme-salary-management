@@ -177,6 +177,30 @@ class EmployeeCrudIntegrationTest {
                 .andExpect(jsonPath("$.salaryHistory.length()").value(2));
     }
 
+    @Test
+    void test_addSalary_inactiveEmployee_returnsConflict() throws Exception {
+        // Arrange
+        String employeeId = createEmployee(
+                "EMP00000010", "Alex", "Smith", "alex.smith@acme.example", "Engineering", "US", "USD");
+        mockMvc.perform(put("/api/v1/employees/" + employeeId)
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                {"firstName":"Alex","lastName":"Smith","email":"alex.smith@acme.example","department":"Engineering","countryCode":"US","currencyCode":"USD","status":"INACTIVE"}
+                """))
+                .andExpect(status().isOk());
+        String body = """
+        {"amountMinor":6000000,"effectiveFrom":"2025-01-01","changeReason":"Annual raise"}
+        """;
+
+        // Act + Assert
+        mockMvc.perform(post("/api/v1/employees/" + employeeId + "/salaries")
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Salary changes are allowed only for active employees"));
+    }
     private String login() throws Exception {
         MvcResult login = mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

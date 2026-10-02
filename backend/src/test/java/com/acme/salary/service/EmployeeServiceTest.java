@@ -3,6 +3,7 @@ package com.acme.salary.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -236,5 +237,27 @@ class EmployeeServiceTest {
 
         // Act + Assert
         assertThrows(NotFoundException.class, () -> employeeService.addSalary(missingId, request));
+    }
+
+    @Test
+    void test_addSalary_inactiveEmployee_throwsConflictException() {
+        // Arrange
+        employee.updateDemographics(
+                employee.getFirstName(),
+                employee.getLastName(),
+                employee.getEmail(),
+                employee.getDepartment(),
+                CountryCode.of(employee.getCountryCode()),
+                employee.getCurrencyCode(),
+                EmployeeStatus.INACTIVE);
+        CreateSalaryRequest request = new CreateSalaryRequest(
+                6_000_000L, LocalDate.of(2025, 1, 1), "Annual raise");
+        when(employeeRepository.findById(employee.getId())).thenReturn(Optional.of(employee));
+
+        // Act + Assert
+        ConflictException ex = assertThrows(
+                ConflictException.class, () -> employeeService.addSalary(employee.getId(), request));
+        assertEquals("Salary changes are allowed only for active employees", ex.getMessage());
+        verify(salaryRecordRepository, never()).save(any());
     }
 }

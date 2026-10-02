@@ -1,7 +1,9 @@
 package com.acme.salary.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -99,5 +101,45 @@ class EmployeeTest {
                 "Engineering",
                 CountryCode.of("US"),
                 "USD"));
+    }
+
+    @Test
+    void test_isEligibleForSalaryChange_active_returnsTrue() {
+        // Arrange
+        Employee employee = Employee.create(
+                "EMP00000010",
+                "Alex",
+                "Smith",
+                "alex.smith@acme.example",
+                "Engineering",
+                CountryCode.of("US"),
+                "USD");
+
+        // Act + Assert
+        assertTrue(employee.isEligibleForSalaryChange());
+    }
+
+    @Test
+    void test_isEligibleForSalaryChange_inactive_returnsFalse() {
+        // Arrange
+        Employee employee = Employee.create(
+                "EMP00000010",
+                "Alex",
+                "Smith",
+                "alex.smith@acme.example",
+                "Engineering",
+                CountryCode.of("US"),
+                "USD");
+        employee.updateDemographics(
+                "Alex",
+                "Smith",
+                "alex.smith@acme.example",
+                "Engineering",
+                CountryCode.of("US"),
+                "USD",
+                EmployeeStatus.INACTIVE);
+
+        // Act + Assert
+        assertFalse(employee.isEligibleForSalaryChange());
     }
 }
