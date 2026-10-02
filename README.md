@@ -72,7 +72,7 @@ Sample Screens
 
 Login Screen 
 
-<img width="3456" height="1452" alt="image" src="https://github.com/user-attachments/assets/01b6e5cd-6818-4ee7-aad4-222849e8642f" />
+<img width="3456" height="1866" alt="image" src="https://github.com/user-attachments/assets/4561eb4e-9d9f-4776-a0c3-a1a9f501e148" />
 
 Employee List 
 
