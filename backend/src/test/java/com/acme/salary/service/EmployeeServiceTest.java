@@ -72,8 +72,8 @@ class EmployeeServiceTest {
         // Arrange
         when(employeeRepository.findAll(any(Specification.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(employee)));
-        when(salaryRecordRepository.findFirstByEmployeeIdOrderByEffectiveFromDescCreatedAtDesc(employee.getId()))
-                .thenReturn(Optional.of(salaryRecord));
+        when(salaryRecordRepository.findCurrentByEmployeeIds(List.of(employee.getId())))
+                .thenReturn(List.of(salaryRecord));
 
         // Act
         PageResponse<?> page = employeeService.search("Smith", "Engineering", "US", "ACTIVE", 0, 20);
@@ -81,6 +81,21 @@ class EmployeeServiceTest {
         // Assert
         assertEquals(1, page.content().size());
         assertEquals(1, page.totalElements());
+        verify(salaryRecordRepository).findCurrentByEmployeeIds(List.of(employee.getId()));
+    }
+
+    @Test
+    void test_search_emptyPage_skipsCurrentSalaryQuery() {
+        // Arrange
+        when(employeeRepository.findAll(any(Specification.class), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        // Act
+        PageResponse<?> page = employeeService.search(null, null, null, null, 0, 20);
+
+        // Assert
+        assertEquals(0, page.content().size());
+        verify(salaryRecordRepository, never()).findCurrentByEmployeeIds(any());
     }
 
     @Test

@@ -44,14 +44,22 @@ public class EmployeeService {
         PageRequest pageable = PageRequest.of(safePage, safeSize, LIST_SORT);
         Page<Employee> result = employeeRepository.findAll(
                 EmployeeSpecifications.withFilters(safeName, safeDepartment, safeCountry, st), pageable);
-        Map<UUID, SalaryRecord> current = new HashMap<>();
-        for (Employee e : result.getContent()) {
-            salaryRecordRepository.findFirstByEmployeeIdOrderByEffectiveFromDescCreatedAtDesc(e.getId())
-                    .ifPresent(r -> current.put(e.getId(), r));
-        }
+        Map<UUID, SalaryRecord> current = loadCurrentSalaries(result.getContent());
         List<EmployeeResponse> content = result.getContent().stream().map(e -> toResp(e, current.get(e.getId()))).toList();
         return new PageResponse<>(content, result.getNumber(), result.getSize(), result.getTotalElements(),
                 result.getTotalPages());
+    }
+
+    private Map<UUID, SalaryRecord> loadCurrentSalaries(List<Employee> employees) {
+        if (employees.isEmpty()) {
+            return Map.of();
+        }
+        List<UUID> employeeIds = employees.stream().map(Employee::getId).toList();
+        Map<UUID, SalaryRecord> current = new HashMap<>(employeeIds.size());
+        for (SalaryRecord salary : salaryRecordRepository.findCurrentByEmployeeIds(employeeIds)) {
+            current.put(salary.getEmployeeId(), salary);
+        }
+        return current;
     }
 
     @Transactional(readOnly = true)

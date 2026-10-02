@@ -3,8 +3,8 @@ package com.acme.salary.infrastructure.persistence;
 import com.acme.salary.domain.SalaryRecord;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,28 +12,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface SalaryRecordRepository extends JpaRepository<SalaryRecord, UUID> {
-    // Tie-break when duplicates existed historically: newest created_at, then highest id.
-    // Unique (employee_id, effective_from) makes effective_from alone sufficient going forward.
-    String CURRENT_SALARY = """
-      (
-        SELECT employee_id, amount_minor, currency_code, effective_from
-        FROM (
-          SELECT employee_id, amount_minor, currency_code, effective_from, created_at, id,
-                 ROW_NUMBER() OVER (
-                   PARTITION BY employee_id
-                   ORDER BY effective_from DESC, created_at DESC, id DESC
-                 ) AS rn
-          FROM salary_record
-        ) ranked
-        WHERE rn = 1
-      )
-      """;
+    String CURRENT_SALARY = "current_salary";
 
     List<SalaryRecord> findByEmployeeIdOrderByEffectiveFromDescCreatedAtDesc(UUID employeeId);
 
-    Optional<SalaryRecord> findFirstByEmployeeIdOrderByEffectiveFromDescCreatedAtDesc(UUID employeeId);
-
     boolean existsByEmployeeIdAndEffectiveFrom(UUID employeeId, LocalDate effectiveFrom);
+
+    @Query(value =
+            "SELECT id, employee_id, amount_minor, currency_code, effective_from, change_reason, created_at "
+                    + "FROM " + CURRENT_SALARY + " WHERE employee_id IN (:ids)",
+            nativeQuery = true)
+    List<SalaryRecord> findCurrentByEmployeeIds(@Param("ids") Collection<UUID> ids);
 
     @Query(value =
             "SELECT s.currency_code AS currencyCode, COUNT(*) AS headcount, "
