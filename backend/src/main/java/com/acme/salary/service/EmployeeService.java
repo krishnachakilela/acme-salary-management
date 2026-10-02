@@ -6,6 +6,7 @@ import com.acme.salary.exception.NotFoundException;
 import com.acme.salary.infrastructure.persistence.*;
 import com.acme.salary.presentation.dto.*;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import org.springframework.data.domain.*;
@@ -45,7 +46,7 @@ public class EmployeeService {
                 EmployeeSpecifications.withFilters(safeName, safeDepartment, safeCountry, st), pageable);
         Map<UUID, SalaryRecord> current = new HashMap<>();
         for (Employee e : result.getContent()) {
-            salaryRecordRepository.findFirstByEmployeeIdOrderByEffectiveFromDesc(e.getId())
+            salaryRecordRepository.findFirstByEmployeeIdOrderByEffectiveFromDescCreatedAtDesc(e.getId())
                     .ifPresent(r -> current.put(e.getId(), r));
         }
         List<EmployeeResponse> content = result.getContent().stream().map(e -> toResp(e, current.get(e.getId()))).toList();
@@ -56,7 +57,8 @@ public class EmployeeService {
     @Transactional(readOnly = true)
     public EmployeeDetailResponse getById(UUID id) {
         Employee e = require(id);
-        List<SalaryRecord> history = salaryRecordRepository.findByEmployeeIdOrderByEffectiveFromDesc(id);
+        List<SalaryRecord> history =
+                salaryRecordRepository.findByEmployeeIdOrderByEffectiveFromDescCreatedAtDesc(id);
         return new EmployeeDetailResponse(toResp(e, history.isEmpty() ? null : history.getFirst()),
                 history.stream().map(EmployeeService::toSalary).toList());
     }
@@ -70,9 +72,8 @@ public class EmployeeService {
         Employee e = Employee.create(req.employeeNumber(), req.firstName(), req.lastName(), req.email(), req.department(),
                 CountryCode.of(req.countryCode()), req.currencyCode());
         employeeRepository.save(e);
-        salaryRecordRepository.save(
-                SalaryRecord.create(e.getId(), new Money(req.initialSalaryMinor(), req.currencyCode()), req.effectiveFrom(),
-                        req.changeReason()));
+        saveSalary(e.getId(), new Money(req.initialSalaryMinor(), req.currencyCode()), req.effectiveFrom(),
+                req.changeReason());
         return getById(e.getId());
     }
 
@@ -94,10 +95,15 @@ public class EmployeeService {
         if (!e.isEligibleForSalaryChange()) {
             throw new ConflictException("Salary changes are allowed only for active employees");
         }
-        salaryRecordRepository.save(
-                SalaryRecord.create(id, new Money(req.amountMinor(), e.getCurrencyCode()), req.effectiveFrom(),
-                        req.changeReason()));
+        saveSalary(id, new Money(req.amountMinor(), e.getCurrencyCode()), req.effectiveFrom(), req.changeReason());
         return getById(id);
+    }
+
+    private void saveSalary(UUID employeeId, Money money, LocalDate effectiveFrom, String changeReason) {
+        if (salaryRecordRepository.existsByEmployeeIdAndEffectiveFrom(employeeId, effectiveFrom)) {
+            throw new ConflictException("Salary already exists for this effective date");
+        }
+        salaryRecordRepository.save(SalaryRecord.create(employeeId, money, effectiveFrom, changeReason));
     }
 
     private static String boundedFilter(String value) {

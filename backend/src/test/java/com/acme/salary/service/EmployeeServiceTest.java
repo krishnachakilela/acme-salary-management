@@ -72,7 +72,7 @@ class EmployeeServiceTest {
         // Arrange
         when(employeeRepository.findAll(any(Specification.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(employee)));
-        when(salaryRecordRepository.findFirstByEmployeeIdOrderByEffectiveFromDesc(employee.getId()))
+        when(salaryRecordRepository.findFirstByEmployeeIdOrderByEffectiveFromDescCreatedAtDesc(employee.getId()))
                 .thenReturn(Optional.of(salaryRecord));
 
         // Act
@@ -192,7 +192,7 @@ class EmployeeServiceTest {
                     EmployeeStatus.ACTIVE,
                     saved.getCreatedAt()));
         });
-        when(salaryRecordRepository.findByEmployeeIdOrderByEffectiveFromDesc(any(UUID.class)))
+        when(salaryRecordRepository.findByEmployeeIdOrderByEffectiveFromDescCreatedAtDesc(any(UUID.class)))
                 .thenReturn(List.of(salaryRecord));
 
         // Act
@@ -258,6 +258,22 @@ class EmployeeServiceTest {
         ConflictException ex = assertThrows(
                 ConflictException.class, () -> employeeService.addSalary(employee.getId(), request));
         assertEquals("Salary changes are allowed only for active employees", ex.getMessage());
+        verify(salaryRecordRepository, never()).save(any());
+    }
+
+    @Test
+    void test_addSalary_duplicateEffectiveFrom_throwsConflictException() {
+        // Arrange
+        CreateSalaryRequest request = new CreateSalaryRequest(
+                6_000_000L, LocalDate.of(2024, 1, 1), "Duplicate date");
+        when(employeeRepository.findById(employee.getId())).thenReturn(Optional.of(employee));
+        when(salaryRecordRepository.existsByEmployeeIdAndEffectiveFrom(employee.getId(), request.effectiveFrom()))
+                .thenReturn(true);
+
+        // Act + Assert
+        ConflictException ex = assertThrows(
+                ConflictException.class, () -> employeeService.addSalary(employee.getId(), request));
+        assertEquals("Salary already exists for this effective date", ex.getMessage());
         verify(salaryRecordRepository, never()).save(any());
     }
 }

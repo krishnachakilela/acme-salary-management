@@ -7,7 +7,11 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Table(name = "salary_record")
+@Table(
+        name = "salary_record",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uq_salary_employee_effective",
+                columnNames = {"employee_id", "effective_from"}))
 public class SalaryRecord {
     @Id
     private UUID id;

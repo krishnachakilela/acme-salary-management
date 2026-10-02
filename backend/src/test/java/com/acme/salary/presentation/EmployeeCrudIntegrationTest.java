@@ -201,6 +201,25 @@ class EmployeeCrudIntegrationTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value("Salary changes are allowed only for active employees"));
     }
+
+    @Test
+    void test_addSalary_duplicateEffectiveFrom_returnsConflict() throws Exception {
+        // Arrange
+        String employeeId = createEmployee(
+                "EMP00000010", "Alex", "Smith", "alex.smith@acme.example", "Engineering", "US", "USD");
+        String body = """
+        {"amountMinor":6000000,"effectiveFrom":"2024-01-01","changeReason":"Duplicate date"}
+        """;
+
+        // Act + Assert
+        mockMvc.perform(post("/api/v1/employees/" + employeeId + "/salaries")
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Salary already exists for this effective date"));
+    }
+
     private String login() throws Exception {
         MvcResult login = mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

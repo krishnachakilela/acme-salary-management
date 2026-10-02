@@ -4,6 +4,7 @@ import com.acme.salary.presentation.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -25,6 +26,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> conflict(ConflictException ex, HttpServletRequest req) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(ex.getMessage(), req.getRequestURI()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> dataConflict(DataIntegrityViolationException ex, HttpServletRequest req) {
+        log.warn("event=data_integrity_conflict path={}", req.getRequestURI());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse("Request conflicts with existing data", req.getRequestURI()));
     }
 
     @ExceptionHandler(DomainException.class)
