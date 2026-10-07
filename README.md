@@ -110,6 +110,10 @@ Salary Distribution bands
 
 <img width="2982" height="598" alt="image" src="https://github.com/user-attachments/assets/b7b51429-6f5e-453d-b3b3-c4703b22551a" />
 
+Flow Diagram 
+<img width="5294" height="8565" alt="diagram" src="https://github.com/user-attachments/assets/1e13b5fb-f59c-46ab-8567-0503ca92f907" />
+
+
 
 
 
